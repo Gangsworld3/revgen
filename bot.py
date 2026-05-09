@@ -17,6 +17,17 @@ from telegram.ext import (
     CommandHandler, filters
 )
 
+# Workaround for Python 3.13 incompatibility with python-telegram-bot's Updater
+# class, which uses __slots__ and fails to set name-mangled attributes under
+# Python 3.13's stricter slot handling.  Removing __slots__ from the class
+# allows dynamic attribute assignment and prevents the AttributeError on startup.
+try:
+    from telegram.ext import Updater as _Updater
+    if hasattr(_Updater, '__slots__'):
+        _Updater.__slots__ = ()
+except Exception:
+    pass
+
 load_dotenv()
 generated_cache = {}
 bin_cache = {}
